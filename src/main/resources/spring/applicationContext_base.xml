@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+						http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd" >
+
+	 <!-- 配置自动扫描的包 spring ioc容器的注解扫描和mvc的扫描是分开的 -->
+     <context:component-scan base-package="com.action,com.service,com.model,com.dao"/>
+     <context:component-scan base-package="com.common.encrypt.impl"/>
+     <context:component-scan base-package="com.common.page"/>
+
+
+     <bean id = "dataSource"  class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" /> 
+        <property name="url" value="jdbc:oracle:thin:@192.168.100.50:1521:orcl" />
+        <property name="username" value="LYNN" /> 
+        <property name="password" value="LYNN"/>
+     </bean>
+     
+   <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+   		<property name="dataSource"><ref bean="dataSource"/></property><!-- 数据源 -->
+	  	<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle9iDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.jdbc.fetch_size">300</prop>
+				<prop key="hibernate.lazy">false</prop>
+				<prop key="hibernate.connection.release_mode">after_transaction</prop>
+			</props>
+		</property>
+		<!-- Hibernate @Entity 注解加载 指定相应的包，避免全部扫描和避免在其它包中写实体类 不需要再hibernate.cfg.xml中写mapping -->
+		<property name="packagesToScan">
+			<list>
+				<value>com.model.</value>
+			</list>
+		</property>
+		</bean>
+   
+   
+    <!-- 声明事务 本平台不使用事务管理器txAdvice管理事务，直接使用@Transactional注解来dao实现类中进行事务开启-->
+   	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+   		<property name="sessionFactory" ref="sessionFactory" />
+   </bean>
+   <!-- 通过开启注解来管理事务   -->
+   <tx:annotation-driven transaction-manager="transactionManager"/>  
+
+	<cache:annotation-driven cache-manager="cacheManager" />  
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">  
+        <property name="cacheManager" ref="ehcache"></property>  
+    </bean>  
+
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:ehcache-setting.xml"></property>  
+    </bean> 
+ </beans>

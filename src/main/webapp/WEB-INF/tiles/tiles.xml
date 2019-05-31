@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+  <!-- 数据列表模板 -->
+  <definition name="listTemplate" template="/WEB-INF/tiles/layouts/listTemplate.jsp">
+    	<put-attribute name="title" value="" />
+    	<put-attribute name="headTemplate" value="/WEB-INF/tiles/layouts/headTemplate.jsp" />
+  </definition>
+  
+   <!-- 数据表单模板 -->
+  <definition name="detailTemplate" template="/WEB-INF/tiles/layouts/detailTemplate.jsp" extends="listTemplate">
+         <!-- 业务表单action地址 -->
+  		<put-attribute name="action" value="" />
+  </definition>
+  
+  <!-- 树形结构模板 -->
+  <definition name="treeTemplate" template="/WEB-INF/tiles/layouts/treeTemplate.jsp" extends="listTemplate">
+    	
+  </definition>
+  
+  <!-- 标签页（选项卡）模板 -->
+  <definition name="tabTemplate" template="/WEB-INF/tiles/layouts/tabTemplate.jsp" extends="listTemplate">
+    	
+  </definition>
+  
+
+  
+  
+</tiles-definitions>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.1" 
+ xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-jsptaglibrary_2_1.xsd">
+ <tlib-version>2.0</tlib-version>
+ <short-name>sys</short-name>
+ 
+   <tag>
+		<name>SelectTag</name>
+		<tagclass>com.common.tld.SelectTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>select list</info>
+		<attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>code</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>lable</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+         <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+         <attribute>
+            <name>isDefault</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>defaultText</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>inline</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>sql</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>laySearch</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	</tag>
+	
+	 <tag>
+		<name>radioTag</name>
+		<tagclass>com.common.tld.RadioTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>radio list</info>
+		<attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>code</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>lable</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+         <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>inline</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+	</tag>
+	
+	<tag>
+		<name>checkboxTag</name>
+		<tagclass>com.common.tld.CheckboxTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>checkbox Tag</info>
+		<attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>lable</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+         <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>checkValue</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>skin</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+         </attribute>
+         <attribute>
+            <name>text</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+         </attribute>
+	</tag>
+	
+	
+	<function>
+		  <description>根据字典编码和值获取对应的字典描述</description>
+		  <name>getDictName</name>
+		  <function-class>com.common.utils.DictUtil</function-class>
+		  <function-signature>java.lang.String getDictName(java.lang.String,java.lang.String)</function-signature>
+		  <example>${sys:getDictName(dictCode,dictValue)}</example>  
+	</function>
+	 <function>
+		  <description>获取字典对象列表</description>
+		  <name>getDictList</name>
+		  <function-class>com.common.tld.getDictTag</function-class>
+		  <function-signature>java.lang.String getDictList(java.lang.String)</function-signature>
+		  <example>${sys:getDictList(typeCode)}</example>  
+	 </function>
+	 <function>
+		  <description>该方法用于根据传入的url和参数串获取正确请求地址</description>
+		  <name>convertUrl</name>
+		  <function-class>com.common.utils.StringUtil</function-class>
+		  <function-signature>java.lang.String convertUrl(java.lang.String,java.lang.String)</function-signature>
+		  <example>${sys:convertUrl(url,para)}</example>  
+	 </function>
+	 <function>
+		  <description>去除一个url的参数部分</description>
+		  <name>romoveUrlPara</name>
+		  <function-class>com.common.utils.StringUtil</function-class>
+		  <function-signature>java.lang.String romoveUrlPara(java.lang.String)</function-signature>
+		  <example>${sys:romoveUrlPara(url)}</example>  
+	 </function>
+	 <function>
+		  <description>去除一个url的参数部分</description>
+		  <name>getFileName</name>
+		  <function-class>com.common.utils.StringUtil</function-class>
+		  <function-signature>java.lang.String getFileName(java.lang.String)</function-signature>
+		  <example>${sys:getFileName(filepath)}</example>  
+	 </function>
+ 
+</taglib>

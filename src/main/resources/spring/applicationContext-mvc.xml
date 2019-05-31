@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+   	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+
+		<!-- 使用注解方式 -->
+    	<mvc:annotation-driven>
+    	<!-- 消息转换器，使用ResponseBody注解时默认是ISO-8859-1,转为UTF-8 -->
+    	<!-- filter中设置的encoding对@ResponseBody无效  -->
+    	  <mvc:message-converters>
+	    	  <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+	    	  <property name="supportedMediaTypes" value="text/html;charset=UTF-8"/>
+	    	  </bean>
+	    	  <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+    	  </mvc:message-converters>
+    	</mvc:annotation-driven>
+    	
+ 		<!-- 配置MultipartResolver -->
+	    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	        <!-- 上传文件大小限制，单位为字节-100Mb -->
+	        <property name="maxUploadSize"><value>104857600</value></property>
+	        <!-- 请求的编码格式 -->
+	        <property name="defaultEncoding"><value>UTF-8</value></property>
+	    </bean>
+
+        <!-- 配置自动扫描的包 -->
+        <context:component-scan base-package="com.action,com.service,com.model,com.dao"/>
+        <context:component-scan base-package="com.common.encrypt.impl"/>
+        <context:component-scan base-package="com.common.page"/>
+        <!-- 不处理静态资源 再web.xml中设置默认servlet-->
+    	<mvc:default-servlet-handler /> 
+        <!-- 通过开启注解来管理事务   -->
+	    <tx:annotation-driven transaction-manager="transactionManager" />
+
+		<!--将所有名称以Action结尾的bean的scope默认设置为PROTOTYPE 避免每次都要再action加@Scope("prototype")--> 
+   		<bean id="myBeanFactoryPostProcessor" class="com.common.spring.MyBeanFactoryPostProcessor" />
+   		
+        <!-- 配置视图解析器 如何把handler方法返回值解析为实际的物理视图 -->
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+            <!-- 视图前缀 -->
+            <property name = "prefix" value="/WEB-INF/views/"></property>
+            <!-- 视图后缀 -->
+            <property name = "suffix" value = ".jsp"></property>
+        </bean>
+        
+        <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        	<property name="definitions">
+            	<list>
+                	<value>/WEB-INF/tiles/tiles.xml</value>
+            	</list>
+        	</property>
+    	</bean>
+        
+		<!--配置拦截器, 多个拦截器,顺序执行 -->  
+		<mvc:interceptors>
+			<!-- 请求消耗时间监控，用于记录超时请求 -->
+			<mvc:interceptor>    
+		        <!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->  
+		        <mvc:mapping path="/**" />
+		        <bean class="com.common.interceptor.TimeHandlerInterceptor">
+		        	<property name="defaultTime"><value>5000</value></property>
+		        </bean>    
+		    </mvc:interceptor>    
+		    <mvc:interceptor>    
+		        <mvc:mapping path="/**" />  
+		        <mvc:exclude-mapping path="/logout"/>  
+		        <mvc:exclude-mapping path="/captcha"/>  
+		        <bean class="com.common.interceptor.LoginHandlerInterceptor"></bean>
+		    </mvc:interceptor>
+		    <mvc:interceptor>    
+		        <mvc:mapping path="/**" />  
+		        <bean class="com.common.interceptor.AuthHandlerInterceptor"></bean>    
+		    </mvc:interceptor>
+		    <!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->  
+		</mvc:interceptors>
+		
+
+		</beans>
