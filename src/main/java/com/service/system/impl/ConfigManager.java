@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.common.utils.Const;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
 import com.model.system.SysConfig;
+import com.model.system.SysLog;
 import com.service.impl.BaseManager;
 import com.service.system.ConfigService;
 
@@ -22,16 +23,16 @@ import com.service.system.ConfigService;
 public class ConfigManager extends BaseManager implements ConfigService{
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map){
+		//获取查询hql
+		StringBuffer hql = getSelectHql(SysConfig.class.getName());
+		//查询工具类
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		searchUtil.setOrder("obj.configOrder");
 		Map<String, Object> sqlMap = new HashMap<String, Object>();
-		StringBuffer hql = new StringBuffer();
-		hql.append("select obj.configId,obj.configName as 配置名称,obj.configCode as 配置编码,obj.configValue as 配置数值,obj.units as 单位,obj.remark as 备注 ,obj.configOrder as 排序  ");
-		hql.append("from SysConfig obj where 1=1  ");
-		
-		Map<String, Object> where = Search.where(hql, map);
-		hql = (StringBuffer) where.get("hql");
-		hql = Search.getOrder(hql,"obj.configOrder");
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, where.get("para"));
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 		
 	}

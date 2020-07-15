@@ -4,22 +4,6 @@
 <tiles:putAttribute name="treeName" value="树形菜单" />
 <tiles:putAttribute name="queryBody">
 
-	<div class="layui-inline">
-		<label class="layui-form-label">菜单名称</label>
-		<div class="layui-input-inline">
-			<input name="obj.menuTitle_like" value="${menuTitle}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">上级菜单</label>
-		<div class="layui-input-inline">
-			<input name="obj.parent.menuTitle_like" value="${parent.menuTitle}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-
-	<div class="layui-inline">
-	  <sys:SelectTag inline="inline" lable="菜单类型" name="obj.menuType"  code="menuType" isDefault="true"  value="${menuType}" ></sys:SelectTag>
-	</div>
 	
 </tiles:putAttribute>
 
@@ -80,10 +64,12 @@ function clickNode(obj){
 	layui.use(['table','layer'], function(){
 		var $ = layui.jquery;
 		var table = layui.table;
-		$("[name='parentId']").val(nodeId);
-		whereField.parentId = nodeId
+		/* $("[name='parentId']").val(nodeId);
+		whereField.parentId = nodeId; */
+		$("#clearBut").click();
+		console.log(whereField);
 		table.reload("listTable", {
-			  where: whereField
+			  where: {parentId:nodeId}
 			  ,page: {
 			    curr: 1 //重新从第 1 页开始
 			  }

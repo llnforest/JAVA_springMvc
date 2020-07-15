@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.model.system.SysConfig;
 import com.service.system.ConfigService;
@@ -25,14 +26,14 @@ import com.service.system.ConfigService;
 public class ConfigAction extends CrudAction<ConfigService,SysConfig>{
 
 	@Override
-	public void handleListData() {
+	public void handleList(Page page) {
+		super.handleList(page);
 		pageUtil.setColsEdit(3, "input");
-		pageUtil.setColsWidth(1, "220");
-		pageUtil.setColsWidth(2, "180");
-		pageUtil.setColsWidth(3, "100");
-		pageUtil.setColsWidth(4, "80");
-		pageUtil.setColsWidth(6, "80");
-		pageUtil.setColsWidth(7, "150");
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
 	}
 	
 	@RequestMapping(value="/editValue",method=RequestMethod.POST)

@@ -23,7 +23,6 @@ public class TimerAction  extends BaseAction<BaseService,BaseModel>{
 	@RequestMapping("/put")
  	@ResponseBody
     public String put(){
-		System.out.println("ok");
 		return RequestUtil.getParamer(request);
     }
 	 

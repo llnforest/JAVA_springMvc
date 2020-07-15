@@ -9,9 +9,9 @@ package com.service.w2;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.service.BasePkNumService;
+import com.service.BaseService;
 
-public interface RecordsService extends BasePkNumService {
+public interface RecordsService extends BaseService {
 	public String getWrongReason(String codes);
 	
 	public Map<String, Object> getSqlMapByFlow(String ksbh,String ksrq);

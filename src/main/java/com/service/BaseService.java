@@ -72,6 +72,13 @@ public interface BaseService {
 	  * @author:Lynn
 	  */
 	 public boolean beforeDeleteModel(String id) throws Exception;
+	 /**
+	  * 执行删除方法之前执行该方法
+	  * 2019年1月23日
+	  * @param id
+	  * @author:Lynn
+	  */
+	 public boolean beforeDeleteModel(Integer id) throws Exception;
 	 
 	 /**
 	  * 该方法用于删除传入的对象
@@ -88,6 +95,13 @@ public interface BaseService {
 	  * @author:Lynn
 	  */
 	 public void afterDeleteModel(String id) throws Exception;
+	 /**
+	  * 执行删除方法之后执行该方法
+	  * 2019年1月23日
+	  * @param id
+	  * @author:Lynn
+	  */
+	 public void afterDeleteModel(Integer id) throws Exception;
 	 
 	 /**
 	  * 该方法用于根据传入的对象calss和主键id删除相应的对象
@@ -97,6 +111,14 @@ public interface BaseService {
 	  * author:wangzhen
 	  */
 	 public void deleteModelById(Class<? extends BaseModel> clazz,String id) throws Exception;
+	 /**
+	  * 该方法用于根据传入的对象calss和主键id删除相应的对象
+	  * 2017年6月22日
+	  * @param clazz
+	  * @param id
+	  * author:wangzhen
+	  */
+	 public void deleteModelById(Class<? extends BaseModel> clazz,Integer id) throws Exception;
 	 
 	 /**
 	  * 该方法用于根据传入的对象calss和主键id数组删除相应的对象
@@ -114,6 +136,13 @@ public interface BaseService {
 	 * author:wangzhen
 	 */
 	 public BaseModel loadModel(Class<? extends BaseModel> clazz,String id);
+	 /**
+	  * 该方法用于根据传入的id加载出当前（T）类型的对象
+	  * 2017年4月28日
+	  * @param id
+	  * author:wangzhen
+	  */
+	 public BaseModel loadModel(Class<? extends BaseModel> clazz,Integer id);
 	 
 	 
 	 /**
@@ -366,4 +395,15 @@ public interface BaseService {
 	 * @author:Lynn
 	 */
 	public List<?> getListWithLimitByHql(String hql,String start,String offset,Object...para);
+	
+	/**
+	 * 该方法用户获取列表分页的查询hql
+	 * 2019年7月11日
+	 * @param tableName
+	 * @return
+	 * @author:Lynn
+	 */
+	public StringBuffer getSelectHql(String tableName);
+	
+	public Class<?> getPkType(Class<? extends BaseModel> clazz);
 }

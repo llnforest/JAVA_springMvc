@@ -2,78 +2,7 @@
 <%@ include file="/WEB-INF/views/common/base.jsp" %>
 <tiles:insertDefinition name="listTemplate">
 <tiles:putAttribute name="queryBody">
-	<div class="layui-inline">
-		<label class="layui-form-label">起始日期</label>
-		<div class="layui-input-inline">
-			<input name="obj.ksrq_>=_date" id="beginTime" value="${ksrq}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">结束日期</label>
-		<div class="layui-input-inline">
-			<input name="obj.ksrq_<=_date" id="endTime" value="${ksrq}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">考生编号</label>
-		<div class="layui-input-inline">
-			<input name="obj.ksbh_like" value="${ksbh}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">考生姓名</label>
-		<div class="layui-input-inline">
-			<input name="obj.xm_like" value="${xm}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">证件号码</label>
-		<div class="layui-input-inline">
-			<input name="obj.zjhm_like" value="${cph}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">准考证号</label>
-		<div class="layui-input-inline">
-			<input name="obj.zkzh_like" value="${zkzh}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<sys:SelectTag inline="inline" isDefault="true"  name="kscj" code="examScore" lable="考试成绩" value="${kscj}"></sys:SelectTag>
-	</div>
-	<div class="layui-inline">
-		<sys:SelectTag inline="inline" isDefault="true"  name="obj.ksjg" code="examResult" lable="考试结果" value="${ksjg}"></sys:SelectTag>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">考车编号</label>
-		<div class="layui-input-inline">
-			<input name="obj.kcbh_like" value="${kcbh}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<sys:SelectTag inline="inline" isDefault="true"  name="obj.kscx" code="carType" lable="考试车型" value="${kscx}"></sys:SelectTag>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">考官姓名</label>
-		<div class="layui-input-inline">
-			<input name="kg" value="${kg}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">驾校代码</label>
-		<div class="layui-input-inline">
-			<input name="obj.jxdm_like" value="${cph}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">驾校名称</label>
-		<div class="layui-input-inline">
-			<input name="obj.jxmc_like" value="${cph}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<sys:SelectTag inline="inline" isDefault="true"  name="obj.sfprint" code="examPrint" lable="是否打印" value="${zt}"></sys:SelectTag>
-	</div>
+	
 </tiles:putAttribute>
 <tiles:putAttribute name="afterForm">
 <style>
@@ -113,7 +42,8 @@
 		clear:both;
 	}
 	.print-ercode{
-		
+		height:45px;
+		margin-bottom:3px;
 	}
 	.student-id{
 		line-height:25px;
@@ -131,8 +61,7 @@
 <div id="print">
 	<div class="print-title">科目二考试成绩单</div>
 	<div class="print-area">
-		<img class="print-ercode" src="" height="40px" width="200px;">
-		<span class="student-id"></span>
+		<img class="print-ercode" src="" >
 	</div>
 	<div class="cf"></div>
 	<table cellspacing="0" cellpadding="0" border="0" class="print-table" width="100%">
@@ -257,7 +186,7 @@
 	    $.ajax({
 	        url:"/w2/records/getPrintImages",
 	        type:'POST',
-	        data: {id:data.col0},//表单数据
+	        data: {id:data.col0,code:data.col3},//表单数据
 	        beforeSend:function(){
 	        	layer.load(2);
 	        },
@@ -265,6 +194,7 @@
 	        	layer.closeAll('loading');
 	        },
 	        success:function(d){
+	        	$(".print-ercode").attr('src','/static/code/'+data.col3+'.png')
 	        	if(d.code=='0'){
 	        		console.log(d.data)
 		        	if(d.data[1] != undefined){
@@ -286,7 +216,9 @@
 	        	}
 	        	renderPrint(data);
 	        	console.log("okokok");
-	        	window.print();
+	        	setTimeout(function(){
+		        	window.print();
+	        	},100)
 	        },
 	        error:function(XMLHttpRequest, textStatus, errorThrown){
 	        	layer.msg("网络异常",{offset:offsetTop});
@@ -301,7 +233,7 @@
 	
 	function renderPrint(data){
 		$("#print .table-name").text(data.col2)
-		$("#print .student-id").text(data.col3)
+		//$("#print .student-id").text(data.col3)
 		$("#print .table-id").text(data.col3)
 		$("#print .table-no").text(data.col4)
 		$("#print .table-car").text(data.col7)

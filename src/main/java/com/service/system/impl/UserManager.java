@@ -6,19 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.common.response.ResponseModel;
 import com.common.utils.Const;
 import com.common.utils.DateUtil;
 import com.common.utils.MapUtil;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
+import com.common.utils.TableUtil;
 import com.model.system.SysRole;
 import com.model.system.SysUser;
 import com.model.system.SysUserConfig;
@@ -35,13 +32,13 @@ import com.service.system.UserService;
 @Service
 public class UserManager extends BaseManager implements UserService{
 	
-	@SuppressWarnings({"unchecked" })
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map) {
 		Map<String, Object> sqlMap = new HashMap<String, Object>();
 		StringBuffer hql = new StringBuffer();
 //		
-		hql.append(" select obj.userId,obj.userNo as 用户编号,obj.userName as 用户姓名,obj.userCardId as 证件号码,obj.userType as 用户类型,obj.ip as 绑定IP,obj.userExpDate as 账号有效期,obj.pwdExpDate as 密码有效期,obj.limitStart as 允许登录时段,obj.limitEnd as 访问限制说明,obj.state as 访问限制说明,obj.dataFlag as 用户状态");
+//		hql.append(" select obj.userId,obj.userNo as 用户编号,obj.userName as 用户姓名,obj.userCardId as 证件号码,obj.userType as 用户类型,obj.ip as 绑定IP,obj.userExpDate as 账号有效期,obj.pwdExpDate as 密码有效期,obj.limitStart as 允许登录时段,obj.limitEnd as 访问限制说明,obj.state as 访问限制说明,obj.dataFlag as 用户状态");
+		hql.append(" select " + TableUtil.getSelect(SysUser.class.getName()));
 		hql.append(" from SysUser obj, SysUserRole userRole  where 1=1 and obj.userId = userRole.sysUser.userId ");
 		if(MapUtil.isNotBlankKey(map,"userExpType")){
 			String nowTime = DateUtil.getNowDateStr();
@@ -59,12 +56,11 @@ public class UserManager extends BaseManager implements UserService{
 				map.put("obj.pwdExpDate_<=_date", nowTime);
 			}
 		}
-		Map<String, Object> where = (Map<String, Object>) Search.where(hql, map);
-		hql = (StringBuffer) where.get("hql");
-//		hql = Search.getGroup(hql, "obj.userId,obj.userNo,obj.userName,obj.userCardId,obj.userType,obj.ip,obj.userExpDate,obj.pwdExpDate,obj.limitStart,obj.limitEnd,obj.state,obj.dataFlag");
-//		hql = Search.getOrder(hql,"obj.userOrder");
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, where.get("para"));
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 	}
 

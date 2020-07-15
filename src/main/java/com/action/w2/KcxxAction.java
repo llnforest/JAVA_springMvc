@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
-import com.action.CrudPkNumAction;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.common.utils.Const;
+import com.common.utils.TableUtil;
 import com.model.w2.W2Kcxx;
 import com.service.w2.KcxxService;
 
@@ -31,12 +32,17 @@ import com.service.w2.KcxxService;
  */
 @Controller
 @RequestMapping("/w2/kcxx")
-public class KcxxAction extends CrudPkNumAction<KcxxService,W2Kcxx>{
+public class KcxxAction extends CrudAction<KcxxService,W2Kcxx>{
 
 	@Override
-	public void handleListData() {
-		pageUtil.setColsWidth(5, "400");
-		pageUtil.setColsTemplet(6, "#statusTpl");
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+		
 	}
 	
 	/**
@@ -45,21 +51,23 @@ public class KcxxAction extends CrudPkNumAction<KcxxService,W2Kcxx>{
 	@Override
 	@RequestMapping(value="/setDataFlag",method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel setDataFlag(@RequestParam(value="id", required=true, defaultValue="0") Integer id){
+	public ResponseModel setDataFlag(@RequestParam(value="id", required=true, defaultValue="0") String id){
+		int pk = Integer.parseInt(id);
 		try {
 			ModelAndView mv = this.getModelAndView(model);
 			String flag = mv.getModel().get("flag").toString();
 			//获取到主键值，则加载对象
-			if(id != 0){
-				 model = (W2Kcxx) service.loadModel(model.getClass(), id);
+			if(pk != 0){
+				 model = (W2Kcxx) service.loadModel(model.getClass(), pk);
 				 if("true".equals(flag)){
 					 model.setZt("1");
 				 }else{
 					 model.setZt("0");
 				 }
-				 model.setModifyId(getSessionUser(request).getUserId());
-				 service.updateModel(model);
-				 return new ResponseModel();
+				 return super.update(model);
+//				 model.setModifyId(getSessionUser(request).getUserId());
+//				 service.updateModel(model);
+//				 return new ResponseModel();
 			}else{
 				return new ResponseModel(Const.PARA_ERROR,Const.FAIL_NO_VALUE);
 			}
@@ -72,10 +80,11 @@ public class KcxxAction extends CrudPkNumAction<KcxxService,W2Kcxx>{
 	
 	@Override
 	@RequestMapping(value="/detail",method=RequestMethod.GET)
-	public ModelAndView detail(@RequestParam(value="id",required=true,defaultValue="0") Integer id){
+	public ModelAndView detail(@RequestParam(value="id",required=true,defaultValue="0") String id){
 		Map<String,Object> mp = new ModelMap();
-		if(StringUtils.isNotEmpty(String.valueOf(id))){
-			model = (W2Kcxx)service.loadModel(model.getClass(), id);
+		int pk = Integer.parseInt(id);
+		if(pk != 0){
+			model = (W2Kcxx)service.loadModel(model.getClass(), pk);
 			//车载视频
 			String czip = model.getCzip();
 			ArrayList<String> czList = new ArrayList<String>(Arrays.asList(czip.split(",")));

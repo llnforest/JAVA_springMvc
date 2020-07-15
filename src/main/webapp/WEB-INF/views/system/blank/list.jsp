@@ -3,27 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <tiles:insertDefinition name="listTemplate">
 <tiles:putAttribute name="queryBody">
-	<div class="layui-inline">
-		<label class="layui-form-label">用户名称</label>
-		<div class="layui-input-inline">
-			<input name="obj.sysUser.userName_like" value="${sysUser.userName}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">终端MAC</label>
-		<div class="layui-input-inline">
-			<input name="obj.clientMac_like" value="${clientMac}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<label class="layui-form-label">创建时间</label>
-		<div class="layui-input-inline">
-			<input name="obj.createTime_>=_time" id="beginTime" value="${createTime}" autocomplete="off" class="layui-input" type="text">
-		</div>
-		<div class="layui-input-inline">
-			<input name="obj.createTime_<=_time" id="endTime" value="${createTime}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
 </tiles:putAttribute>
 <tiles:putAttribute name="afterForm">
 <script type="text/html" id="listBarWith">

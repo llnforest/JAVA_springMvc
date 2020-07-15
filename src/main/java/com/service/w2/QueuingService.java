@@ -8,9 +8,9 @@ package com.service.w2;
 
 import java.util.ArrayList;
 
-import com.service.BasePkNumService;
+import com.service.BaseService;
 
-public interface QueuingService extends BasePkNumService {
+public interface QueuingService extends BaseService {
 
 	public String getProjectNames(ArrayList<String> projectArr);
 }

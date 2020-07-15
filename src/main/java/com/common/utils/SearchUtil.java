@@ -11,18 +11,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import oracle.net.aso.a;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.ui.ModelMap;
 
+import com.sun.org.apache.xpath.internal.functions.Function;
 
 
-public class Search {
+
+public class SearchUtil {
+	public  StringBuffer hql = new StringBuffer();
+	public List<Object> para = new ArrayList<Object>();
 	
-	public static Map<String, Object> where(StringBuffer hql,ModelMap map){
-		Map<String, Object> where = new HashMap<String, Object>();
-		List<Object> para = new ArrayList<Object>();;
+	public SearchUtil(){
 		
+	}
+	
+	public SearchUtil(StringBuffer hql){
+		this.hql = hql;
+	}
+	
+	public void setHql(StringBuffer hql){
+		this.hql = hql;
+	}
+	
+	public StringBuffer getHql(){
+		return hql;
+	}
+	
+	public void where(ModelMap map){
 		if(MapUtils.isNotEmpty(map)){
 			String key,value;
 			for (Map.Entry<String, Object> entry:map.entrySet()) {
@@ -78,9 +98,6 @@ public class Search {
 				}
 			}
 		}
-		where.put("hql", hql);
-		where.put("para", para);
-		return where;
 	}
 	
 	/**
@@ -91,11 +108,10 @@ public class Search {
 	 * @return
 	 * @author:Lynn
 	 */
-	public static StringBuffer getGroup(StringBuffer hql,String group){
+	public void setGroup(String group){
 		if(StringUtils.isNotEmpty(group)){
 			hql.append(" group by " + group + " ");
 		}
-		return hql;
 	}
 	
 	/**
@@ -106,7 +122,7 @@ public class Search {
 	 * @return
 	 * @author:Lynn
 	 */
-	public static StringBuffer getOrder(StringBuffer hql,String ...order){
+	public void setOrder(String ...order){
 		if(order != null){
 			for(int i=0;i<order.length;i++){
 				if(i == 0){
@@ -119,7 +135,6 @@ public class Search {
 		}else{
 			hql.append(" order by obj.orderby ");
 		}
-		return hql;
 	}
 	
 
@@ -131,8 +146,7 @@ public class Search {
 	 * @return
 	 * @author:Lynn
 	 */
-	public static StringBuffer getOrder(StringBuffer hql){
+	public void setOrder(){
 		hql.append(" order by obj.orderby ");
-		return hql;
 	}
 }

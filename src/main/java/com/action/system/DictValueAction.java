@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.common.page.PageUtil;
 import com.common.spring.BeanHelper;
 import com.common.utils.StringUtil;
@@ -29,9 +30,18 @@ import com.service.system.DictValueService;
 @RequestMapping("/system/dictvalue")
 public class DictValueAction extends CrudAction<DictValueService, SysDictValue>{
 
+//	@Override
+//	public void handleListData(){
+//		pageUtil.setColsTemplet(4, "#colorTpl");
+//	}
+	@Override
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
 	@Override
 	public void handleListData(){
-		pageUtil.setColsTemplet(4, "#colorTpl");
+		super.handleListData();
 	}
 	
 	@RequestMapping(value="/showValue",method=RequestMethod.GET)

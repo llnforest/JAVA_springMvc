@@ -23,6 +23,7 @@ public class DictUtil {
 	
 	//系统字典数据map集合(code+valCode:valName)
 	private static HashMap<String,String> dictMap=new HashMap<String,String>();
+	private static HashMap<String,String> dictColorMap=new HashMap<String,String>();
 	//记录当前字典编码是否已经加入到缓存中(code:true)
 	private static HashMap<String,Boolean> dictCache=new HashMap<String,Boolean>();
 	private static HashMap<String,Boolean> dictColorCache=new HashMap<String,Boolean>();
@@ -69,9 +70,9 @@ public class DictUtil {
 				if(dictValue!=null){
 					String color = dictValue.getValColor();
 					if(StringUtils.isNotEmpty(color)){
-						dictMap.put(dictCode+"-"+dictValue.getValCode(), "<span style='color:"+color+"'>"+dictValue.getValName()+"</span>");
+						dictColorMap.put(dictCode+"-"+dictValue.getValCode(), "<span style='color:"+color+"'>"+dictValue.getValName()+"</span>");
 					}else{
-						dictMap.put(dictCode+"-"+dictValue.getValCode(), dictValue.getValName());
+						dictColorMap.put(dictCode+"-"+dictValue.getValCode(), dictValue.getValName());
 
 					}
 				}
@@ -113,7 +114,7 @@ public class DictUtil {
 		if(dictColorCache.get(dictCode)==null||!dictColorCache.get(dictCode)){
 			loadDictMapColor(dictCode);
 		}
-		String dictName = dictMap.get(dictCode+"-"+dictValue);
+		String dictName = dictColorMap.get(dictCode+"-"+dictValue);
 		if(StringUtils.isNotEmpty(dictName)){
 			return dictName;
 		}else{
@@ -177,6 +178,7 @@ public class DictUtil {
 	 */
 	public static void clearDictCache(){
 		 dictMap=new HashMap<String,String>();
+		 dictColorMap=new HashMap<String,String>();
 		 dictCache=new HashMap<String,Boolean>();
 		 dictColorCache=new HashMap<String,Boolean>();
 		 dictList=new HashMap<String,List<SysDictValue>>();

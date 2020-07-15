@@ -13,7 +13,8 @@ import com.common.response.ResponseModel;
 import com.common.spring.BeanHelper;
 import com.common.utils.Const;
 import com.common.utils.DateUtil;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
+import com.common.utils.TableUtil;
 import com.model.system.SysBlank;
 import com.model.system.SysConfig;
 import com.model.system.SysLog;
@@ -21,6 +22,7 @@ import com.model.system.SysUser;
 import com.service.impl.BaseManager;
 import com.service.system.BlankService;
 import com.service.system.ConfigService;
+import com.sun.istack.internal.logging.Logger;
 
 /**  
  *  
@@ -32,18 +34,20 @@ import com.service.system.ConfigService;
 public class BlankManager extends BaseManager implements BlankService{
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map){
-		Map<String, Object> sqlMap = new HashMap<String, Object>();
+		//查询工具类
 		StringBuffer hql = new StringBuffer();
-		hql.append("select obj.blankId,obj.sysUser.userName as 用户名称,obj.clientMac as 终端MAC,obj.blankType as 类型,obj.dataFlag as 状态,obj.createTime as 创建时间 ");
+		log.info(TableUtil.getSelect(SysBlank.class.getName()));
+		hql.append("select "+TableUtil.getSelect(SysBlank.class.getName()));
 		hql.append("from SysBlank obj left join obj.sysUser sysUser where 1=1  ");
 		
-		Map<String, Object> where = Search.where(hql, map);
-		hql = (StringBuffer) where.get("hql");
-		hql = Search.getOrder(hql,"obj.blankType");
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, where.get("para"));
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		searchUtil.setOrder("obj.blankType");
+		Map<String, Object> sqlMap = new HashMap<String, Object>();
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
-		
 	}
 
 	@Override

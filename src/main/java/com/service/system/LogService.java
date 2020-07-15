@@ -39,6 +39,15 @@ public interface LogService extends BaseService{
 	public void setFailLog(String id);
 	
 	/**
+	 * 设置日志操作结果——失败
+	 * 2019年2月13日
+	 * @param id
+	 * @param remark
+	 * @author:Lynn
+	 */
+	public void setRemarkLog(String id,String remark);
+	
+	/**
 	 * 添加安全日志
 	 * 2019年2月15日
 	 * @param operateName

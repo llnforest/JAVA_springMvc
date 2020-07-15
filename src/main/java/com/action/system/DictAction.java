@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.model.system.SysDict;
 import com.service.system.DictService;
 
@@ -24,8 +25,13 @@ public class DictAction extends CrudAction<DictService,SysDict>{
 	}
 
 	@Override
-	public void handleListData() {
-		pageUtil.setDataDict(3, "dataStruct");
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
 	}
 	
 

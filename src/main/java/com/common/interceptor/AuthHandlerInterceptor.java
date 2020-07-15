@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.endpoint.ClientImpl.EchoContext;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -46,8 +47,12 @@ public class AuthHandlerInterceptor extends HandlerInterceptorAdapter {
 			String uri = request.getRequestURI();
 			Set<String> menuSet = (Set<String>) session.getAttribute(Const.SESSION_AUTH);
 			BaseService baseService = (BaseService)BeanHelper.getBean("service");
+//			if(1 == 1) return true;
 			logger.info(uri);
 			Map<String, String> auth = baseService.isInAuth(uri, menuSet);
+			logger.info(auth);
+			System.out.println(request.getSession().getAttribute(Const.SESSION_LOG_ID));
+//			if(1 == 1) return false;
 			System.out.println(auth.get("status"));
 			if(auth.get("status").equals("true")){//权限通过
 				System.out.println("权限验证成功");
@@ -97,6 +102,8 @@ public class AuthHandlerInterceptor extends HandlerInterceptorAdapter {
 	public void afterCompletion(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
+			request.getSession().removeAttribute(Const.SESSION_LOG_ID);
+			System.out.println("------------------end--------------");
 	}
 
 }

@@ -20,7 +20,6 @@ public class EhcacheUtil {
 	private static String configfile="ehcache-setting.xml";
 	
 	public static void init(){
-		System.out.println("Ok");
 		if(cache == null){
 //			URL url = EhcacheUtil.class.getResource(configfile);
 			CacheManager cacheManager = CacheManager.create(EhcacheUtil.class.getClassLoader().getResourceAsStream(configfile));

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
-import com.action.CrudPkNumAction;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.common.utils.Const;
 import com.common.utils.DictUtil;
@@ -40,29 +40,18 @@ import com.service.w2.QueuingService;
  */
 @Controller
 @RequestMapping("/w2/queuing")
-public class QueuingAction extends CrudPkNumAction<QueuingService,W2Queuing>{
+public class QueuingAction extends CrudAction<QueuingService,W2Queuing>{
 
 	@Override
-	public void handleListData() {
-		pageUtil.setColsWidth(1, "130");
-		pageUtil.setColsWidth(2, "100");
-		pageUtil.setColsWidth(3, "175");
-		pageUtil.setColsWidth(4, "80");
-		pageUtil.setColsWidth(5, "80");
-		pageUtil.setColsWidth(6, "90");
-		pageUtil.setColsWidth(7, "80");
-		pageUtil.setColsWidth(8, "100");
-		pageUtil.setColsWidth(9, "200");
-		pageUtil.setColsWidth(10, "500");
-		pageUtil.setInsetColMap(10, "未完成项目", this, "getUndoProject","9,10");
-		pageUtil.setColsHide(11, true);
-		pageUtil.setColsWidth(12, "100");
-		pageUtil.setColsWidth(13, "175");
-		pageUtil.setColsWidth(14, "175");
-		pageUtil.setDataDict(7, "examTimes");
-		pageUtil.setDataDict(8, "queuingStatus");
-//		pageUtil.setColsWidth(5, "400");
-//		pageUtil.setColsTemplet(6, "#statusTpl");
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+		pageUtil.setColsEditCol(10, this, "getUndoProject","9,10");
+		
 	}
 	
 	/**
@@ -85,10 +74,11 @@ public class QueuingAction extends CrudPkNumAction<QueuingService,W2Queuing>{
 	
 	@Override
 	@RequestMapping(value={"/detail","/detailByUpdateStatus"},method=RequestMethod.GET)
-	public ModelAndView detail(@RequestParam(value="id", required=true, defaultValue="0") Integer id){
+	public ModelAndView detail(@RequestParam(value="id", required=true, defaultValue="0") String id){
 		//获取到主键值，则加载对象
-		if(id != 0){
-			 model = (W2Queuing) service.loadModel(model.getClass(), id);
+		int pk = Integer.parseInt(id);
+		if(pk != 0){
+			 model = (W2Queuing) service.loadModel(model.getClass(), pk);
 			 model.setWcxm(this.getUndoProject(model.getKsxm(), model.getWcxm()));
 		}
 		ModelAndView mv = this.getModelAndView(model);

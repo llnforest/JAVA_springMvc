@@ -10,15 +10,6 @@
 </div> --> 
 </tiles:putAttribute>
 <tiles:putAttribute name="queryBody">
-	<div class="layui-inline">
-		<label class="layui-form-label">字典参数</label>
-		<div class="layui-input-inline">
-			<input name="obj.valName" value="${valName}" autocomplete="off" class="layui-input" type="text">
-		</div>
-	</div>
-	<div class="layui-inline">
-		<sys:SelectTag inline="inline" laySearch="true" name="obj.sysDict.dictId" lable="字典名称" value="${dictId}" sql="select dictName,dictId from SysDict order by dictOrder asc"></sys:SelectTag>
-	</div>
 </tiles:putAttribute>
 <tiles:putAttribute name="afterForm">
 <script type="text/html" id="colorTpl">

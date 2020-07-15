@@ -55,8 +55,10 @@ public class Const {
 	 * 自动退出地址
 	 */
 	public static final String CANCEL_URL = "/cancelLogin";	
-	
-	
+	/**
+	 * 条形码存储地址
+	 */
+	public static final String CODE_PATH = "D:\\softInstall\\apache-tomcat-8.0.53\\me-webapps\\springMvc\\static\\code\\";
 	
 	
 	
@@ -107,6 +109,10 @@ public class Const {
 	 * 未取到值提醒信息
 	 */
 	public static final String FAIL_NO_VALUE = "未取到有效参数值！";	
+	/**
+	 * 不允许修改提示信息
+	 */
+	public static final String FAIL_EDIT_VALUE = "未匹配到字段名称！";	
 	/**
 	 * 参数错误
 	 */
@@ -208,6 +214,15 @@ public class Const {
 	 */
 	public static final String CUSTOM_AUTH_URI = "customAuthURI";	
 	
+	/**
+	 * 查询区域事项list
+	 */
+	public static final String LIST_QUERY = "listQuery"; 
+	
+	/**
+	 * 查询区域参数list
+	 */
+	public static final String LIST_QUERY_PARAMS = "listQueryParams"; 
 	
 	/**************************接口状态常量*****************************/
 	/**

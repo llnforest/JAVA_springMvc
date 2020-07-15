@@ -1,39 +1,24 @@
 package com.action.w2;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Method;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.inject.New;
-import javax.management.MBeanAttributeInfo;
-import javax.transaction.Transactional;
-import javax.xml.soap.Detail;
 
 import net.sf.json.JSONObject;
-import oracle.sql.BLOB;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.krysalis.barcode4j.impl.code128.Code128Bean;
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,20 +26,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
-import com.action.CrudPkNumAction;
 import com.common.page.Page;
 import com.common.page.PageDataTrans;
 import com.common.response.ResponseModel;
-import com.common.spring.BeanHelper;
 import com.common.utils.Const;
-import com.common.utils.ConvertUtil;
-import com.common.utils.StringUtil;
 import com.model.w2.W2Flowzp;
-import com.model.w2.W2Kcxx;
 import com.model.w2.W2Records;
-import com.service.w2.KcxxService;
 import com.service.w2.RecordsService;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * 考车信息
@@ -63,36 +41,49 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
  */
 @Controller
 @RequestMapping("/w2/records")
-public class RecordsAction extends CrudPkNumAction<RecordsService,W2Records>{
+public class RecordsAction extends CrudAction<RecordsService,W2Records>{
 
+//	@Override
+//	public void handleList(Page page) {
+////		pageUtil.setShowNumbers(false);
+//		pageUtil.setShowRadio(true);
+//		pageUtil.setColsWidth(new String[]{"0","140","120","180","140","150","70","70","100","100","100","120","120","120","300","80","120","120","120","300","80","120","80","120","200","320","120"});
+////		pageUtil.setColsWidth(5, "400");
+//		Map<Integer, String> colsStyleMap = new HashMap<Integer, String>();
+//		colsStyleMap.put(12, "background-color:#a8e0b2");
+//		colsStyleMap.put(13, "background-color:#a8e0b2");
+//		colsStyleMap.put(14, "background-color:#a8e0b2");
+//		colsStyleMap.put(15, "background-color:#a8e0b2");
+//		colsStyleMap.put(16, "background-color:#a8e0b2");
+//		colsStyleMap.put(18, "background-color:#e0b4d9");
+//		colsStyleMap.put(19, "background-color:#e0b4d9");
+//		colsStyleMap.put(20, "background-color:#e0b4d9");
+//		colsStyleMap.put(21, "background-color:#e0b4d9");
+//		colsStyleMap.put(17, "background-color:#e0b4d9");
+//		pageUtil.setColsStyleMap(colsStyleMap);
+//		pageUtil.setDataDict(5, "examResult");
+//		pageUtil.setDataDict(8, "examReason");
+//		pageUtil.setDataDict(22, "examPrint");
+//		pageUtil.setColsJsfunc(11, "'#'.substring(0,10)");
+//		pageUtil.setColsJsfunc(12, "'#'.substring(11,19)");
+//		pageUtil.setColsJsfunc(13, "'#'.substring(11,19)");
+//		pageUtil.setColsJsfunc(17, "'#'.substring(11,19)");
+//		pageUtil.setColsJsfunc(18, "'#'.substring(11,19)");
+//		pageUtil.setColsEditCol(14, this, "getWrongReason","14");
+//		pageUtil.setColsEditCol(19, this, "getWrongReason","19");
+//	}
+	
 	@Override
-	public void handleListData() {
-//		pageUtil.setShowNumbers(false);
-		pageUtil.setShowRadio(true);
-		pageUtil.setColsWidth(new String[]{"0","140","120","180","140","150","70","70","100","100","100","120","120","120","300","80","120","120","120","300","80","120","80","120","200","320","120"});
-//		pageUtil.setColsWidth(5, "400");
-		Map<Integer, String> colsStyleMap = new HashMap<Integer, String>();
-		colsStyleMap.put(12, "background-color:#a8e0b2");
-		colsStyleMap.put(13, "background-color:#a8e0b2");
-		colsStyleMap.put(14, "background-color:#a8e0b2");
-		colsStyleMap.put(15, "background-color:#a8e0b2");
-		colsStyleMap.put(16, "background-color:#a8e0b2");
-		colsStyleMap.put(18, "background-color:#e0b4d9");
-		colsStyleMap.put(19, "background-color:#e0b4d9");
-		colsStyleMap.put(20, "background-color:#e0b4d9");
-		colsStyleMap.put(21, "background-color:#e0b4d9");
-		colsStyleMap.put(17, "background-color:#e0b4d9");
-		pageUtil.setColsStyleMap(colsStyleMap);
-		pageUtil.setDataDict(5, "examResult");
-		pageUtil.setDataDict(8, "examReason");
-		pageUtil.setDataDict(22, "examPrint");
-		pageUtil.setJsFuncColMap(11, "'#'.substring(0,10)");
-		pageUtil.setJsFuncColMap(12, "'#'.substring(11,19)");
-		pageUtil.setJsFuncColMap(13, "'#'.substring(11,19)");
-		pageUtil.setJsFuncColMap(17, "'#'.substring(11,19)");
-		pageUtil.setJsFuncColMap(18, "'#'.substring(11,19)");
-		pageUtil.setInsetColMap(14, "扣分信息1", this, "getWrongReason","14",false);
-		pageUtil.setInsetColMap(19, "扣分信息2", this, "getWrongReason","19",false);
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+		pageUtil.setColsEditCol(14, this, "getWrongReason","14");
+		pageUtil.setColsEditCol(19, this, "getWrongReason","19");
+		
 	}
 	
 	public String getWrongReason(String codes){
@@ -187,8 +178,8 @@ public class RecordsAction extends CrudPkNumAction<RecordsService,W2Records>{
 		pageUtil.setShowPage(false);
 		pageUtil.setColsSort(false);
 		pageUtil.setToolbar(false);
-		pageUtil.setInsetColMap(4, "扣分信息", this, "getWrongReason","4",false);
-		pageUtil.setJsFuncColMap(2, "'#'.substring(11,19)");
+		pageUtil.setColsEditCol(4,  this, "getWrongReason","4");
+		pageUtil.setColsJsfunc(2, "'#'.substring(11,19)");
 		pageUtil.setColsTemplet(3, "#xmTpl");
 		pageUtil.setColsTemplet(5, "#imgTpl");
 		pageUtil.setColsHide(6, true);
@@ -220,10 +211,18 @@ public class RecordsAction extends CrudPkNumAction<RecordsService,W2Records>{
 		}
 	}
 	
+	/**
+	 * 获取打印的图片数据
+	 * 2019年6月20日
+	 * @param id
+	 * @param code
+	 * @return
+	 * @author:Lynn
+	 */
 	@RequestMapping(value="/getPrintImages",method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseModel getPrintImages(@RequestParam(value="id",required=true,defaultValue="0") Integer id){
-		logger.info("----------------------");
+	public ResponseModel getPrintImages(@RequestParam(value="id",required=true,defaultValue="0") Integer id,@RequestParam(value="code",required=true,defaultValue="") String code){
+		this.getBarCode(code);//生成条形码
 		ResponseModel rModel = new ResponseModel();
 		if(id != 0){
 			Map<Integer, ArrayList<Integer>> imgIdsMap = service.getPrintImages(id);
@@ -236,9 +235,43 @@ public class RecordsAction extends CrudPkNumAction<RecordsService,W2Records>{
 		}else{
 			rModel.setCode("1");
 		}
-		logger.info("=+++++++++++++++++++++++++++++++");
 		return rModel; 
-		
 	}
+	
+	/**
+	 * 生成条形码
+	 * 2019年6月20日
+	 * @param code
+	 * @author:Lynn
+	 */
+	public void getBarCode(String code){
+		try{
+			//判断文件夹是否存在
+			File pathFile = new File(Const.CODE_PATH);
+			if(!pathFile.exists()) pathFile.mkdir();
+			
+			//判断文件是否存在
+			String path = Const.CODE_PATH + code + ".png";
+			File file = new File(path);
+			if(file.exists()) return;
+			
+			//生成条形码
+			OutputStream ous = new FileOutputStream(file);
+			if(StringUtils.isEmpty(code) || ous == null) return;
+			Code128Bean bean = new Code128Bean();
+			final double moduleWidth = 0.50;
+			final int resolution = 150;
+			bean.setModuleWidth(moduleWidth);
+			bean.doQuietZone(false);
+			String format = "image/png";
+			BitmapCanvasProvider canvas = new BitmapCanvasProvider(ous, format, resolution, BufferedImage.TYPE_BYTE_BINARY, false, 0);
+			bean.generateBarcode(canvas, code);
+			canvas.finish();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 }

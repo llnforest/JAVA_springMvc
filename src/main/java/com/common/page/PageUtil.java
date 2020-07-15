@@ -33,7 +33,7 @@ public class PageUtil {
 	/**
 	 * 局部定义当前常规单元格的最小宽度（默认：60），一般用于列宽自动分配的情况。其优先级高于基础参数中的 cellMinWidth
 	 */
-	Map<Integer, Integer> colsMinWidthMap = new HashMap<Integer, Integer>();
+	Map<Integer, String> colsMinWidthMap = new HashMap<Integer, String>();
 	/**
 	 * 固定列。可选值有：left（固定在左）、right（固定在右）。一旦设定，对应的列将会被固定在左或右，不随滚动条而滚动。 
 	 * 如果是固定在左，该列必须放在表头最前面；如果是固定在右，该列必须放在表头最后面。
@@ -222,10 +222,10 @@ public class PageUtil {
 	 * 例如：{3:{colName:colName,clazzName:class,funcName:method,indexName:index,isInsert:true},4:{}}
 	 * 3代表插入的列，class代表类 ，method代表调用方法
 	 */
-	Map<Integer, Map<String, Object>> insetColMap = new HashMap<Integer, Map<String,Object>>();
+//	Map<Integer, Map<String, Object>> editColMap = new HashMap<Integer, Map<String,Object>>();
 	
 	/**
-	 * 修改列内容
+	 * 修改列内容(新增)
 	 * 例如：{3:{colName:colName,clazzName:class,funcName:method,indexName:index},4:{}}
 	 * 3代表插入的列，class代表类 ，method代表调用方法
 	 */
@@ -332,7 +332,7 @@ public class PageUtil {
 	 * @param width 宽度值  当值为0时不生效
 	 * author:wangzhen
 	 */
-	public void setColsMinWidth(Integer index, Integer minWidth) {
+	public void setColsMinWidth(Integer index, String minWidth) {
 		colsMinWidthMap.put(index, minWidth);
 	}
 	
@@ -342,7 +342,7 @@ public class PageUtil {
 	 * @param widths 最小宽度值数组 数组值为0时不生效
 	 * author:wangzhen
 	 */
-	public void setColsMinWidth(Integer[] minWidths) {
+	public void setColsMinWidth(String[] minWidths) {
 		if(!ArrayUtils.isEmpty(minWidths)){
 			for (int i = 0; i < minWidths.length; i++) {
 				setColsMinWidth(i,minWidths[i]);
@@ -357,8 +357,8 @@ public class PageUtil {
 	 * @return
 	 * author:wangzhen
 	 */
-	public Integer getColsMinWidth(Integer index) {
-		if(colsMinWidthMap.get(index)!=null&&colsMinWidthMap.get(index)!=0){
+	public String getColsMinWidth(Integer index) {
+		if(StringUtils.isNotEmpty(colsMinWidthMap.get(index))){
 			return colsMinWidthMap.get(index);
 		}else{
 			return null;
@@ -385,7 +385,7 @@ public class PageUtil {
 	 */
 	public String getColsFixed(Integer index) {
 		if(StringUtils.isNotEmpty(colsFixedMap.get(index))){
-			return colsWidthMap.get(index);
+			return colsFixedMap.get(index);
 		}else{
 			return "";
 		}
@@ -587,28 +587,13 @@ public class PageUtil {
 	 * @param funcs js方法名，用#代替需替换的值 ex:'#'.substring(0,10);
 	 * @author:Lynn
 	 */
-	public void setJsFuncColMap(String[] funcs) {
+	public void setColsJsfunc(String[] funcs) {
 		if(!ArrayUtils.isEmpty(funcs)){
 			for (int i = 0; i < funcs.length; i++) {
-				setJsFuncColMap(i,funcs[i]);
+				setColsJsfunc(i,funcs[i]);
 			}
 		}
 	}
-	
-	/**
-	 * 获取列的js方法映射
-	 * 2019年1月18日
-	 * @param index int
-	 * @author:Lynn
-	 */
-	public String getJsFuncColMap(Integer index) {
-		if(StringUtils.isNotEmpty(jsFuncColMap.get(index))){
-			return jsFuncColMap.get(index);
-		}else{
-			return "";
-		}
-	}
-
 	
 	/**
 	 * 设置列的js方法映射
@@ -617,9 +602,29 @@ public class PageUtil {
 	 * @param funcs js方法名，用#代替需替换的值 ex:'#'.substring(0,10);
 	 * @author:Lynn
 	 */
-	public void setJsFuncColMap(Integer index,String func) {
+	public void setColsJsfunc(Integer index,String func) {
 		this.jsFuncColMap.put(index, func);
 	}
+	
+	public void setColsJsfuncMap(Map<Integer, String> jsFuncColMap){
+		this.jsFuncColMap = jsFuncColMap;
+	}
+	
+	/**
+	 * 获取列的js方法映射
+	 * 2019年1月18日
+	 * @param index int
+	 * @author:Lynn
+	 */
+	public String getColsJsfunc(Integer index) {
+		if(StringUtils.isNotEmpty(jsFuncColMap.get(index))){
+			return jsFuncColMap.get(index);
+		}else{
+			return "";
+		}
+	}
+
+	
 
 	
 	/**
@@ -628,49 +633,26 @@ public class PageUtil {
 	 * @return
 	 * @author:Lynn
 	 */
-	public Map<Integer, Map<String, Object>> getInsetColMap() {
-		return insetColMap;
+	public Map<Integer, Map<String, Object>> getColsEditColMap() {
+		return editColMap;
 	}
 	
-	/**
-	 * 设置新插入的列map
-	 * 2019年1月23日
-	 * @param index 插入位置
-	 * @param colName  插入列名称
-	 * @param clazz  对象
-	 * @param funcName  调用方法名
-	 * @param indexName  参数，正常返回数据的位置用,号分割作为参数
-	 * @author:Lynn
-	 */
-	public void setInsetColMap(Integer index,String colName,Object clazz,String funcName,String indexName) {
-		Map<String,Object> colMap = new HashMap<String, Object>();
-		colMap.put("colName", colName);
-		colMap.put("clazzName", clazz);
-		colMap.put("funcName", funcName);
-		colMap.put("indexName", indexName);
-		colMap.put("isInsert", true);
-		insetColMap.put(index, colMap);
-	}
 	
 	/**
 	 * 设置新修改的列map
 	 * 2019年1月23日
-	 * @param index 插入位置
-	 * @param colName  插入列名称
+	 * @param index 修改位置
 	 * @param clazz  对象
 	 * @param funcName  调用方法名
 	 * @param indexName  参数，正常返回数据的位置用,号分割作为参数
-	 * @param isInsert  参数，boolean:修改 新增
 	 * @author:Lynn
 	 */
-	public void setInsetColMap(Integer index,String colName,Object clazz,String funcName,String indexName,Boolean isInsert) {
+	public void setColsEditCol(Integer index,Object clazz,String funcName,String indexName) {
 		Map<String,Object> colMap = new HashMap<String, Object>();
-		colMap.put("colName", colName);
 		colMap.put("clazzName", clazz);
 		colMap.put("funcName", funcName);
 		colMap.put("indexName", indexName);
-		colMap.put("isInsert", isInsert);
-		insetColMap.put(index, colMap);
+		editColMap.put(index, colMap);
 	}
 
 	
@@ -684,7 +666,7 @@ public class PageUtil {
 		this.colsWidthMap = colsWidthMap;
 	}
 
-	public Map<Integer, Integer> getColsMinWidthMap() {
+	public Map<Integer, String> getColsMinWidthMap() {
 		return colsMinWidthMap;
 	}
 	
@@ -696,7 +678,7 @@ public class PageUtil {
 		this.colsFixedMap = colsFixedMap;
 	}
 
-	public void setColsMinWidthMap(Map<Integer, Integer> colsMinWidthMap) {
+	public void setColsMinWidthMap(Map<Integer, String> colsMinWidthMap) {
 		this.colsMinWidthMap = colsMinWidthMap;
 	}
 

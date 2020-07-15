@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.common.spring.BeanHelper;
 import com.common.utils.Const;
@@ -38,9 +39,14 @@ public class RoleAction extends CrudAction<RoleService,SysRole>{
 	};
 	
 	@Override
-	public void handleListData() {
-		pageUtil.setDataDict(2, "roleGroup");
-	};
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+	}
 	
 	//权限页面
 	@RequestMapping("/authTree")
@@ -52,7 +58,7 @@ public class RoleAction extends CrudAction<RoleService,SysRole>{
 		return mv;
 	}
 		
-	//权限页面
+	//获取权限
 	@RequestMapping(value = "/getAuth",method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseModel getAuth(@RequestParam(value="roleId",defaultValue="",required=true) String roleId){

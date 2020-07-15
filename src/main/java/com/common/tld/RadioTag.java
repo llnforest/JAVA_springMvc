@@ -36,7 +36,7 @@ public class RadioTag extends BodyTagSupport{
 	public int doEndTag() throws JspException {
 		try {
 			this.pageContext.getOut().println(getHtmlTag());
-			this.pageContext.getOut().close();
+//			this.pageContext.getOut().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

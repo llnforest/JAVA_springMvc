@@ -6,8 +6,8 @@
  */
 package com.service.w2;
 
-import com.service.BasePkNumService;
+import com.service.BaseService;
 
-public interface KcxxService extends BasePkNumService {
+public interface KcxxService extends BaseService {
 
 }

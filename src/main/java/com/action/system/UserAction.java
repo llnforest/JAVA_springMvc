@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.action.CrudAction;
 import com.common.delegate.EventHandler;
 import com.common.encrypt.Encrypt;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.common.spring.BeanHelper;
 import com.common.utils.Const;
@@ -59,21 +60,17 @@ public class UserAction extends CrudAction<UserService,SysUser>{
 	}
 	
 	@Override
-	public void handleListData(){
-//		pageUtil.setShowNumbers(false);
-//		pageUtil.setShowCheckbox(true);
+	public void handleList(Page page) {
+		super.handleList(page);
 		pageUtil.setShowRadio(true);
-		pageUtil.setInsetColMap(3, "角色名称", this, "getRoleNames","0");
-		pageUtil.setDataDict(5, "userType");
-//		pageUtil.setDataDict(11, "userState");
-		pageUtil.setJsFuncColMap(7, "'#'.substring(0,10)");
-		pageUtil.setJsFuncColMap(8, "'#'.substring(0,10)");
-		pageUtil.setColsTemplet(9, "#allowTimeTpl");
-		pageUtil.setColsHide(10, true);
-		pageUtil.setColsTemplet(12,"#statusTpl");
-		pageUtil.setColsTemplet(11,"#limitTextTpl");
-		
 	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+		pageUtil.setColsEditCol(4,  this, "getRoleNames","0");
+	}
+	
 	@RequestMapping(value="/detail",method=RequestMethod.GET)
 	public ModelAndView detail(@RequestParam(value="id", required=false, defaultValue="") String id){
 		ModelAndView mv = super.detail(id);

@@ -15,9 +15,10 @@ import org.springframework.ui.ModelMap;
 
 import com.common.utils.Const;
 import com.common.utils.DateUtil;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
 import com.model.system.SysLog;
 import com.model.system.SysMenu;
+import com.model.system.SysRole;
 import com.service.impl.BaseManager;
 import com.service.system.LogService;
 
@@ -32,18 +33,17 @@ public class LogManager extends BaseManager implements LogService{
 
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map) {
-		Map<String, Object> sqlMap = new HashMap<String, Object>();
-		StringBuffer hql = new StringBuffer();
-		hql.append(" select obj.logId ,obj.userName as 操作人员,obj.operateName as 操作类别,obj.operateType as 类型,obj.operateResult as 结果,obj.appUrl as 访问地址");
-		hql.append(" ,obj.clientName as 机器名称,obj.clientIp as IP地址,obj.remark as 备注,obj.createTime as 操作时间 ");
-		hql.append(" from SysLog obj where 1=1 ");
-		
+		//获取查询hql
+		StringBuffer hql = getSelectHql(SysLog.class.getName());
 		map.put("obj.logLevel", "3");
-		Map<String, Object> where = (Map<String, Object>) Search.where(hql, map);//处理
-		hql = (StringBuffer) where.get("hql");//获取hql
-		hql = Search.getOrder(hql,"obj.createTime desc");//排序
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, where.get("para"));
+		//查询工具类
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		searchUtil.setOrder("obj.createTime desc");
+		Map<String, Object> sqlMap = new HashMap<String, Object>();
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 	}
 
@@ -73,6 +73,11 @@ public class LogManager extends BaseManager implements LogService{
 	@Override
 	public void setFailLog(String id) {
 		executeHql("update SysLog obj set obj.operateResult = 2 where obj.logId = ?", id);
+	}
+	
+	@Override
+	public void setRemarkLog(String id,String remark) {
+		executeHql("update SysLog obj set obj.remark = ? where obj.logId = ?", new Object[]{remark,id});
 	}
 
 	@Override

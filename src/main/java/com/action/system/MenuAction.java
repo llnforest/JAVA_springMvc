@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.common.response.ResponseModel;
 import com.common.tree.Node;
 import com.common.utils.Const;
@@ -33,17 +34,14 @@ public class MenuAction extends CrudAction<MenuService,SysMenu>{
 	}
 	
 	@Override
-	public void handleListData() {
-		pageUtil.setShowNumbers(true);
-		pageUtil.setColsWidth(1, "80");
-		pageUtil.setDataDict(4, "businessType");
-		pageUtil.setColsWidth(9, "250");
-		pageUtil.setColsWidth(5, "120");
-		pageUtil.setColsWidth(6, "120");
-		pageUtil.setDataDict(5, "menuType");
-		pageUtil.setDataDict(6, "logLevel");
-		pageUtil.setColsEdit(8,"input");
-	};
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+	}
 	
 	//删除菜单
 	@RequestMapping(value="/delete/{id}",method=RequestMethod.POST)
@@ -79,14 +77,26 @@ public class MenuAction extends CrudAction<MenuService,SysMenu>{
 	@RequestMapping(value="/editOrder",method=RequestMethod.POST)
 	@ResponseBody
 	public ResponseModel editOrder(@RequestParam(value="id", required=true, defaultValue="") String id,@RequestParam(value="data", required=true, defaultValue="") Integer data){
-		
-		try {
-			service.executeHql("update SysMenu set menuOrder = ? where menuId = ?", new Object[]{data,id});
-			return new ResponseModel();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseModel(Const.CRUD_ERROR,e.getMessage());
-		}
+		SysMenu sysMenu = (SysMenu)service.loadModel(SysMenu.class, id);
+		sysMenu.setMenuOrder(data);
+//		try {
+//			service.updateModel(sysMenu);
+//			return new ResponseModel();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return new ResponseModel(Const.CRUD_ERROR,e.getMessage());
+//		}
+////		logger.info(sysMenu);
+		return super.update(sysMenu);
+			
+//		try {
+//			service.executeHql("update SysMenu set menuOrder = ? where menuId = ?", new Object[]{data,id});
+//			return new ResponseModel();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return new ResponseModel(Const.CRUD_ERROR,e.getMessage());
+//		}
 	}
 
 }

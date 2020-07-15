@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.action.CrudAction;
+import com.common.page.Page;
 import com.model.system.SysLog;
 import com.service.system.LogService;
 import com.service.system.SafeLogService;
@@ -19,8 +20,13 @@ import com.service.system.SafeLogService;
 public class SafeLogAction extends CrudAction<SafeLogService,SysLog>{
 
 	@Override
-	public void handleListData() {
-//		pageUtil.setColsWidth(8, "80");
-		pageUtil.setDataDict(4, "operateResult");
+	public void handleList(Page page) {
+		super.handleList(page);
+	}
+	
+	@Override
+	public void handleListData(){
+		super.handleListData();
+		
 	}
 }

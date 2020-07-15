@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.ehcache.Element;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -77,21 +78,22 @@ public class LoginAction  extends CrudAction<LoginService,BaseModel>{
 //			LoginService loginService = (LoginService)BeanHelper.getBean("loginManager");
 //			SessionUser user = loginService.login("admin", "1234qwer");
 //			logger.info(user.getUserId());
-			List<Object> para = new ArrayList<Object>();
+//			List<Object> para = new ArrayList<Object>();
+//			
+//			para.add("admin");
+//			List<SysUser> userlist = (List<SysUser>) loginservice.getUserList(new Object[]{"admin"});
 			
-			para.add("admin");
-			List<SysUser> userlist = (List<SysUser>) loginservice.getUserList(new Object[]{"admin"});
 			
-			
-			logger.info(userlist.toString());
-			
+//			logger.info(userlist.toString());
+			String a = "{'id':'你好','code':'good'}";
+			Map map = (Map)JSONObject.fromObject(a);
 //			SysUser user = userlist.get(0);
 //			logger.info(user.getUserId());
 //			for(SysUser sysUser : userlist){
 //				logger.info(sysUser.getUserName());
 //			}
 			
-			return "ok";
+			return "ok1";
 		}
 	
 	    /**

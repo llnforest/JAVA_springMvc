@@ -24,13 +24,14 @@
 	</c:if>
 	<form class="layui-form" name="ListForm" method="POST" action="">
 	  <div class="layui-form-item plat-list-query">
+	  	<tiles:insertAttribute name="queryTemplate" ignore="true" />
 	  	<tiles:insertAttribute name="queryBody" ignore="true" />
-			<div class="layui-form-item plat-list-query-button" id = "listBut">
-				<button v-show="${page.showQueryBut}" class="layui-btn layui-btn-sm" id="queryBut" type="button"  lay-submit  lay-filter="formQuery"><i class="layui-icon layui-icon-search"></i>查询</button>
-				<button v-show="${page.showQueryBut}" class="layui-btn layui-btn-sm" id="clearBut" type="reset"><i class="layui-icon layui-icon-file"></i>重置</button>
-				<button v-show="${page.showExportBut}" class="layui-btn layui-btn-sm" id="exportBut" type="button"><i class="layui-icon layui-icon-table"></i>导出</button>
-				<list-button v-for="but in listButs" :but="but" :key="but.id" v-on:event="butEvent(but)" /> 
-			</div>
+		<div class="layui-form-item plat-list-query-button" id = "listBut">
+			<button v-show="${page.showQueryBut}" class="layui-btn layui-btn-sm" id="queryBut" type="button"  lay-submit  lay-filter="formQuery"><i class="layui-icon layui-icon-search"></i>查询</button>
+			<button v-show="${page.showQueryBut}" class="layui-btn layui-btn-sm" id="clearBut" type="reset"><i class="layui-icon layui-icon-file"></i>重置</button>
+			<button v-show="${page.showExportBut}" class="layui-btn layui-btn-sm" id="exportBut" type="button"><i class="layui-icon layui-icon-table"></i>导出</button>
+			<list-button v-for="but in listButs" :but="but" :key="but.id" v-on:event="butEvent(but)" /> 
+		</div>
 	  </div>
 	<table class="layui-hide" id="listTable" lay-filter="listTableFilter"></table>
 	
@@ -112,8 +113,27 @@ layui.use(['table','layer','form','laytpl','element'], function(){
  
   	//监听input框
   	table.on('edit(listTableFilter)',function(obj){
-		eval(obj.field+"(obj);")
-	})
+  		console.log(obj);
+  		if(obj.value == "") return true;
+		$.ajax({
+		        url: '<tiles:getAsString  name="editFieldUrl" defaultValue="${servletURI.replace('list', 'editField')}" ignore="true"/>',
+		        type: 'POST',
+		        data: {"data":obj.value,"id":obj.data.col0,"field":obj.field},
+		        dataType: "json",
+		        success:function (data){
+		        	 //保存成果
+		        	 if(data.code == '0'){
+		        	 	layer.msg("修改列值成功",{offset:offsetTop}); 
+		        	 }else{
+		        		initFunc(true,"修改列值失败："+data.desc);
+		        	 }
+		        },
+		        error:function(XMLHttpRequest, textStatus, errorThrown){
+		        	initFunc(true,"网络异常!");
+		        }
+		})
+		//eval(obj.field+"(obj);")
+	});
 	
  	//监听单击行事件
  	table.on('radio(listTableFilter)', function(obj){
@@ -171,23 +191,28 @@ layui.use(['table','layer','form','laytpl','element'], function(){
 	     $.ajax({
 	         url: '<tiles:getAsString  name="addUrl" defaultValue="${servletURI.replace('list', 'setDataFlag')}" ignore="true"/>',
 	         type: 'POST',
-	         data: {"flag":obj.elem.checked,"id":this.value},
+	         data: {"flag":obj.elem.checked,"id":this.value,field:obj.elem.name},
 	         dataType: "json",
 	         success:function (data){
 	         	 //保存成果
 	         	 if(data.code=='0'){
 	         		 layer.msg("状态设置成功！",{offset:offsetTop}); 
 	         	 }else{
-	         		 initFunc(false,"状态设置成功！"+data.desc);
+	         		 initFunc(true,"状态设置失败！"+data.desc);
 	         	 }
 	         },
 	         error:function(XMLHttpRequest, textStatus, errorThrown){
-	         	initFunc(false,"网络异常！");
+	         	initFunc(true,"网络异常！");
 	         }
 	      });
 	  });
 		  
 });
+
+//switch 开关控制模板
+function tplSwitch(d,value,name,text){
+	return '<input type="checkbox" name="'+name+'" value="'+d.col0+'" lay-skin="switch" lay-text="'+text+'" lay-filter="dataFlag" '+ (value == 'Y' || value == 1 ? 'checked' : '') +'>';
+}
 
 //通用的新增方法
 function add(obj){

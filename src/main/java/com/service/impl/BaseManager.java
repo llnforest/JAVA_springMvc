@@ -1,6 +1,7 @@
 package com.service.impl;
 
 import java.awt.MenuShortcut;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.json.JsonObject;
+import javax.persistence.Id;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Request;
 
@@ -29,8 +31,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.common.log.SysLogger;
 import com.common.page.Page;
+import com.common.spring.BeanHelper;
 import com.common.utils.Const;
 import com.common.utils.StringUtil;
+import com.common.utils.TableUtil;
 import com.dao.BaseDao;
 import com.model.BaseModel;
 import com.model.system.SysLog;
@@ -51,6 +55,8 @@ public class BaseManager implements BaseService{
 	protected SysLogger log = new SysLogger(this);
 	@Autowired
 	protected BaseDao<BaseModel, String> baseDao;
+	@Autowired
+	protected BaseDao<BaseModel, Integer> baseDaoInt;
 
 	
 	public BaseManager(){
@@ -96,6 +102,9 @@ public class BaseManager implements BaseService{
 	public void deleteModelById(Class<? extends BaseModel> clazz,String id) throws Exception{
 			deleteModel(loadModel(clazz,id));
 	}
+	public void deleteModelById(Class<? extends BaseModel> clazz,Integer id) throws Exception{
+		deleteModel(loadModel(clazz,id));
+	}
 	
 	@Override
 	public void deleteModelByIds(Class<? extends BaseModel> clazz,String[] ids) {
@@ -114,6 +123,16 @@ public class BaseManager implements BaseService{
 		try {
 			
 			return baseDao.load(clazz,id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@SuppressWarnings("all")
+	public  BaseModel loadModel(Class clazz,Integer id) {
+		try {
+			
+			return baseDaoInt.load(clazz,id);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -389,12 +408,17 @@ public class BaseManager implements BaseService{
 	public boolean beforeDeleteModel(String id) throws Exception {
 		return true;
 	}
+	public boolean beforeDeleteModel(Integer id) throws Exception {
+		return true;
+	}
 	
 	@Override
 	public void afterDeleteModel(String id) throws Exception {
 	}
+	public void afterDeleteModel(Integer id) throws Exception {
+	}
 	
-	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, String> isInAuth(String uri, Set<String> menuSet) {
 		Boolean isAuth = true;
@@ -418,19 +442,28 @@ public class BaseManager implements BaseService{
 				uri = uri.substring(0,uri.lastIndexOf("/"));
 				List<SysMenu> parentMenus = (List<SysMenu>) getListByHql("from SysMenu obj where obj.menuUrl like  ? ", "%"+uri+"%");
 				if(CollectionUtils.isNotEmpty(parentMenus)){
-					for(int i = 0; i < parentMenus.size(); i ++){
-						SysMenu menu = parentMenus.get(i);
-						SysMenu sysMenu = (SysMenu) getUniqueByHql("from SysMenu obj where obj.parentId = ? and obj.buttonFunction = ? ", new Object[]{menu.getMenuId(),endAction});
-						if(sysMenu != null){
-							menuId = sysMenu.getMenuId();
-							if(menuSet.contains(sysMenu.getMenuId())){
-								isAuth = true;
-								break;
-							}else{
-								isAuth = false;
+					if(parentMenus.size() == 1){
+						SysMenu menu = parentMenus.get(0);
+						menuId = menu.getMenuId();
+						if(!menuSet.contains(menuId)){
+							isAuth = false;
+						}
+					}else{
+						for(int i = 0; i < parentMenus.size(); i ++){
+							SysMenu menu = parentMenus.get(i);
+							SysMenu sysMenu = (SysMenu) getUniqueByHql("from SysMenu obj where obj.parentId = ? and obj.buttonFunction = ? ", new Object[]{menu.getMenuId(),endAction});
+							if(sysMenu != null){
+								menuId = sysMenu.getMenuId();
+								if(menuSet.contains(sysMenu.getMenuId())){
+									isAuth = true;
+									break;
+								}else{
+									isAuth = false;
+								}
 							}
 						}
 					}
+					
 				}
 			}
 		}
@@ -507,6 +540,25 @@ public class BaseManager implements BaseService{
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	@Override
+	public StringBuffer getSelectHql(String tableName){
+		StringBuffer hql = new StringBuffer();
+		hql.append("select"+TableUtil.getSelect(tableName));
+		hql.append(" from "+tableName+" obj  where 1=1  ");
+		return hql;
+	}
+	@Override
+	public Class<?> getPkType(Class<? extends BaseModel> clazz) {
+		Method[] methods = clazz.getDeclaredMethods();
+		for(Method method:methods){
+			if(method.isAnnotationPresent(Id.class)){
+				return method.getReturnType();
+					
+			}
+		}
+		return null;
 	}
 	
 }

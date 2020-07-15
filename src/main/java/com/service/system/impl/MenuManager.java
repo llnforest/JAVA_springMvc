@@ -13,7 +13,8 @@ import org.springframework.ui.ModelMap;
 import com.common.response.ResponseModel;
 import com.common.tree.Node;
 import com.common.utils.Const;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
+import com.common.utils.TableUtil;
 import com.model.BaseModel;
 import com.model.system.SysMenu;
 import com.model.system.SysUser;
@@ -33,25 +34,36 @@ public class MenuManager extends BaseManager implements MenuService{
 	public Map<String, Object> getSqlMap(ModelMap map) {
 		Map<String, Object> sqlMap = new HashMap<String, Object>();
 		StringBuffer hql = new StringBuffer();
-		hql.append(" select obj.menuId ,obj.menuIcon as 图标,obj.menuTitle as 菜单名称,  ");
-		hql.append(" obj.parent.menuTitle as 上级菜单, ");
-		hql.append(" obj.businessType as 业务类别,obj.menuType as 菜单类型,obj.logLevel as 日志级别,obj.menuUrl as 菜单地址 ,obj.menuOrder as 菜单排序");
+		hql.append(" select " + TableUtil.getSelect(SysMenu.class.getName()));
 		hql.append(" from SysMenu obj left join obj.parent where 1=1");
 		
-		Map<String,Object> where = Search.where(hql, map);
-		hql = (StringBuffer)where.get("hql");
-		List<Object> para = (List<Object>) where.get("para");
+//		Map<String,Object> where = Search.where(hql, map);
+//		hql = (StringBuffer)where.get("hql");
+//		List<Object> para = (List<Object>) where.get("para");
+//		if(map.get("parentId")!=null && StringUtils.isNotEmpty(map.get("parentId").toString())){
+//			hql.append(" and (obj.parent.menuId = ? or obj.menuId = ?) ");
+//			para.add(map.get("parentId").toString());
+//			para.add(map.get("parentId").toString());
+//		}
+		
+//		hql = Search.getOrder(hql,"obj.menuOrder");
+//		
+//		
+//		sqlMap.put(Const.PAGE_SQL, hql.toString());
+//		sqlMap.put(Const.SQL_PARA, para);
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
 		if(map.get("parentId")!=null && StringUtils.isNotEmpty(map.get("parentId").toString())){
-			hql.append(" and (obj.parent.menuId = ? or obj.menuId = ?) ");
-			para.add(map.get("parentId").toString());
-			para.add(map.get("parentId").toString());
+			searchUtil.hql.append(" and (obj.parent.menuId = ? or obj.menuId = ?) ");
+			searchUtil.para.add(map.get("parentId").toString());
+			searchUtil.para.add(map.get("parentId").toString());
 		}
-		
-		hql = Search.getOrder(hql,"obj.menuOrder");
-		
-		
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, para);
+		System.out.println("------------------------");
+		System.out.println(searchUtil.hql.toString());
+		searchUtil.setOrder("obj.menuOrder");
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 	}
 

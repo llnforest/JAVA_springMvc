@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -37,12 +38,17 @@ public class SelectTag extends BodyTagSupport {
 	
 //	private String multiple = "false";//开启多选/搜索模式/样式 TODO 
 	
+	/* 标签初始方法 */
+	@Override
+    public int doStartTag() throws JspException{
+        return super.doStartTag();
+    }
 	
 	@Override
 	public int doEndTag() throws JspException {
 		try {
 			this.pageContext.getOut().println(getHtmlTag());
-			this.pageContext.getOut().close();
+//			this.pageContext.getOut().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,9 +86,7 @@ public class SelectTag extends BodyTagSupport {
 		}
 		html += "<div class=\"layui-input-"+inline+"\" "+styleCss+">";
 		html += "<select name=\""+name+"\" lay-filter=\""+name+"\" "+search+">";
-		System.out.println(isDefault);
 		if(isDefault.equals("true")){
-			System.out.println("ok");
 			html +="<option value=\"\">"+defaultText+"</option>";	
 		}
 		if(CollectionUtils.isNotEmpty(dictList)){
@@ -95,7 +99,6 @@ public class SelectTag extends BodyTagSupport {
 		html += "</div>";
 		return html;
 	}
-	
 	
 	
 	public String getName() {

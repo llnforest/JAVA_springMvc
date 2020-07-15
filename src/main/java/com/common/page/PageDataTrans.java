@@ -34,13 +34,6 @@ public class PageDataTrans {
 	 * author:wangzhen
 	 */
 	public static Page TransPageCols(Page page,PageUtil pageUtil){
-		//是否需要重置表头数据
-		if(!pageUtil.getInsetColMap().isEmpty()){
-			for (Map.Entry<Integer, Map<String, Object>> entry: pageUtil.getInsetColMap().entrySet()) {
-				if((boolean)entry.getValue().get("isInsert")) page.insertHeader(entry.getKey(), String.valueOf(entry.getValue().get("colName")));
-				else page.setHeader(entry.getKey(), String.valueOf(entry.getValue().get("colName")));
-			}
-		}
 		//转换表头数据
 		 String cols = "[[";
 		if(!ArrayUtils.isEmpty(page.getHeader())){
@@ -80,7 +73,7 @@ public class PageDataTrans {
 					cols +=",width:"+pageUtil.getColsWidth(i);
 				}
 				//设置cols最小宽度
-				if(pageUtil.getColsMinWidth(i)!=null&&pageUtil.getColsMinWidth(i)!=0){
+				if(StringUtils.isNotEmpty(pageUtil.getColsMinWidth(i))){
 					cols +=",minWidth:"+pageUtil.getColsMinWidth(i);
 				}
 				//设置固定列
@@ -129,6 +122,9 @@ public class PageDataTrans {
 				cols +=",{fixed:'right',title:'操作', align:'"+pageUtil.getAlign()+"',toolbar:'#"+pageUtil.getToolbarId()+"'";
 				if(StringUtils.isNotEmpty(pageUtil.getColsWidth(page.getHeader().length))){
 					cols +=",width:"+pageUtil.getColsWidth(page.getHeader().length);
+				}
+				if(StringUtils.isNotEmpty(pageUtil.getColsMinWidth(page.getHeader().length))){
+					cols +=",minWidth:"+pageUtil.getColsMinWidth(page.getHeader().length);
 				}
 				cols +="}";
 			}
@@ -203,12 +199,12 @@ public class PageDataTrans {
 			for (int i = 0; i < data.size(); i++) {
 				Object[] rowList = (Object[]) data.get(i);
 				if(!ArrayUtils.isEmpty(rowList)){
-					Map<Integer, Map<String, Object>> newColMap = pageUtil.getInsetColMap();
+					Map<Integer, Map<String, Object>> newColMap = pageUtil.getColsEditColMap();
 					dataJson +="{";
 					int col = 0;
 					int totalLength = rowList.length + newColMap.size();
 					for (int k = 0; k < rowList.length; k++) {
-						//判断是否有新插入的列
+						//判断是否有新修改的列
 						if(!newColMap.isEmpty() && newColMap.containsKey(k)){
 							//重置委托函数参数
 							String indexString = String.valueOf(newColMap.get(k).get("indexName"));
@@ -221,7 +217,7 @@ public class PageDataTrans {
 							String td = EventHandler.addEvent(newColMap.get(k).get("clazzName"), String.valueOf(newColMap.get(k).get("funcName")), args);
 							dataJson = transJson(pageUtil, dataJson, td, col, totalLength);
 							col ++;
-							if(!(Boolean)newColMap.get(k).get("isInsert")) continue;
+							continue;
 							
 						}
 						//获取每一列数据
@@ -259,7 +255,7 @@ public class PageDataTrans {
 			//获取编码对应的数据
 			td = DictUtil.getDictNameColor(pageUtil.getDataDict(col), td);
 		}
-		td = StringUtil.getJsEvalFunc(pageUtil.getJsFuncColMap(col), td);
+		td = StringUtil.getJsEvalFunc(pageUtil.getColsJsfunc(col), td);
 		dataJson += "\"col"+col+"\""+":"+"\""+td+"\"";
 		if(col < totalLength - 1){
 			dataJson +=",";

@@ -19,33 +19,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.common.utils.Const;
-import com.common.utils.Search;
+import com.common.utils.SearchUtil;
 import com.model.w2.W2Records;
-import com.service.impl.BasePkNumManager;
-import com.service.w2.KcxxService;
+import com.service.impl.BaseManager;
 import com.service.w2.RecordsService;
 
 @Service
-public class RecordsManager extends BasePkNumManager implements RecordsService {
-	private int nextInt;
+public class RecordsManager extends BaseManager implements RecordsService {
 
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map){
-		Map<String, Object> sqlMap = new HashMap<String, Object>();
-		StringBuffer hql = new StringBuffer();
-		hql.append("select obj.id,obj.ksbh as 考生编号,obj.xm as 考生姓名,obj.zjhm as 证件号码,obj.zkzh as 准考证号,obj.ksjg as 考试结果,obj.kcbh as 车号,obj.kscx as 车型,obj.ksyy as 考试原因,obj.yycs as 预约次数,obj.kscs as 考试次数,obj.ksrq as 考试日期,obj.kssj1 as 开始时间1,obj.jssj1 as 结束时间1,obj.kfxx1 as 扣分信息1,obj.jgfs1 as 分数1,obj.ksy1 as 考官1,obj.kssj2 as 开始时间2,obj.jssj2 as 结束时间2,obj.kfxx2 as 扣分信息2,obj.jgfs2 as 分数2,obj.ksy2 as 考官2,obj.sfprint as 打印 ,obj.jxdm as 驾校代码,obj.jxmc as 驾校名称,obj.sjjyw as 校验码");
-		hql.append(" from W2Records obj  where 1=1  ");
+		//获取查询hql
+		StringBuffer hql = getSelectHql(W2Records.class.getName());
+		//查询工具类
 		if(map.get("kg") != null && StringUtils.isNotEmpty(map.get("kg").toString())){
 			hql.append(" and (obj.ksy1 like '%"+map.get("kg").toString()+"%' or obj.ksy2 like '%"+map.get("kg").toString()+"%') ");
 		}
 		if(map.get("kscj") != null && StringUtils.isNotEmpty(map.get("kscj").toString())){
 			hql.append(" and obj.ksjg in ("+map.get("kscj").toString()+") ");
 		}
-		Map<String, Object> where = Search.where(hql, map);
-		hql = (StringBuffer) where.get("hql");
-		hql = Search.getOrder(hql,"obj.ksbh");
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, where.get("para"));
+		
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		searchUtil.setOrder("obj.ksbh");
+		Map<String, Object> sqlMap = new HashMap<String, Object>();
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 		
 	}
@@ -99,39 +99,49 @@ public class RecordsManager extends BasePkNumManager implements RecordsService {
 			}
 			if(CollectionUtils.isNotEmpty(list)){
 				int status = 2,fir=0;
-				List<Integer> firList = new ArrayList<Integer>();
-				List<Integer> secList = new ArrayList<Integer>();
-				List<Integer> firIds = new ArrayList<Integer>();
-				List<Integer> secIds = new ArrayList<Integer>();
+				List<Integer> firList = new ArrayList<Integer>();//第一次数据
+				List<Integer> secList = new ArrayList<Integer>();//第二次数据
+				List<Integer> firIds = new ArrayList<Integer>();//第一次开始结束数据
+				List<Integer> secIds = new ArrayList<Integer>();//第二次开始结束数据
 				
+				//判断有没有第二次考试
 				if(w2Records.getKsrq2() == null){
 					status = 1;
 				}
 				for(int i=0;i<list.size();i++){
 					Object[] sub = (Object[])list.get(i);
 					log.info(sub[1]);
+					//比较第一次开始时间
 					if(status == 1 && w2Records.getKssj1().compareTo((Timestamp)sub[1]) == 0){
 						fir = 1;
 						firIds.add((int)sub[0]);
 					}
-					if(status == 1 && w2Records.getJssj1().compareTo((Timestamp)sub[1]) == 0){
+					//比较第一次结束时间
+					else if(status == 1 && w2Records.getJssj1().compareTo((Timestamp)sub[1]) == 0){
 						firIds.add((int)sub[0]);
 					}
-					if(fir == 1){
+					//存储第一次考试数据
+					else if(fir == 1){
 						firList.add((int)sub[0]);
-					}else if(fir == 2){
-						secList.add((int)sub[0]);
 					}
+					
+					//比较第二次开始时间
 					if(status == 2 && w2Records.getKssj2().compareTo((Timestamp)sub[1]) == 0){
 						fir = 2;
 						secIds.add((int)sub[0]);
 					}
-					if(status == 2 && w2Records.getJssj2().compareTo((Timestamp)sub[1]) == 0){
+					//比较第二次开始时间
+					else if(status == 2 && w2Records.getJssj2().compareTo((Timestamp)sub[1]) == 0){
 						secIds.add((int)sub[0]);
+					}
+					//存储第二次考试数据
+					else if(fir == 2){
+						secList.add((int)sub[0]);
 					}
 				}
 				Random rand = new Random();
 				Map<Integer,ArrayList<Integer>> imageIds = new HashMap<Integer, ArrayList<Integer>>();
+				//随机抽取第一次考试数据集中的一条数据
 				if(CollectionUtils.isNotEmpty(firIds)){
 					ArrayList<Integer> list1 = new ArrayList<Integer>();
 					for(int i= 0;i<2;i++){
@@ -142,6 +152,7 @@ public class RecordsManager extends BasePkNumManager implements RecordsService {
 					}
 					imageIds.put(1, list1);
 				}
+				//随机抽取第二次考试数据集中的一条数据
 				if(CollectionUtils.isNotEmpty(secIds)){
 					ArrayList<Integer> list2 = new ArrayList<Integer>();
 					for(int i= 0;i<2;i++){

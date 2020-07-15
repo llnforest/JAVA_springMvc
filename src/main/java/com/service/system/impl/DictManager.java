@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.common.utils.Const;
+import com.common.utils.SearchUtil;
 import com.model.system.SysDict;
 import com.model.system.SysDictValue;
 import com.service.impl.BaseManager;
@@ -26,22 +27,16 @@ public class DictManager extends BaseManager implements DictService{
 	
 	@Override
 	public Map<String, Object> getSqlMap(ModelMap map) {
+		//获取查询hql
+		StringBuffer hql = getSelectHql(SysDict.class.getName());
+		//查询工具类
+		SearchUtil searchUtil = new SearchUtil(hql);
+		searchUtil.setHql(hql);
+		searchUtil.where(map);
+		searchUtil.setOrder("obj.dictOrder asc");
 		Map<String, Object> sqlMap = new HashMap<String, Object>();
-		List<Object> para = new ArrayList<Object>();
-		StringBuffer hql = new StringBuffer();
-		hql.append(" select obj.dictId ,obj.dictName as 字典名称,obj.dictCode as 字典编码,obj.dictType as 字典类型,obj.dictOrder as 排序号码,obj.remark as 备注说明 ");
-		hql.append(" from SysDict obj where 1=1 ");
-		if(map.get("dictName")!=null&&StringUtils.isNotEmpty(map.get("dictName").toString())){
-			hql.append(" and obj.dictName like ? ");
-			para.add("%"+map.get("dictName").toString()+"%");
-		}
-		if(map.get("dictCode")!=null&&StringUtils.isNotEmpty(map.get("dictCode").toString())){
-			hql.append(" and obj.dictCode like ? ");
-			para.add("%"+map.get("dictCode").toString()+"%");
-		}
-		hql.append(" order by obj.dictOrder asc  ");
-		sqlMap.put(Const.PAGE_SQL, hql.toString());
-		sqlMap.put(Const.SQL_PARA, para);
+		sqlMap.put(Const.PAGE_SQL, searchUtil.hql.toString());
+		sqlMap.put(Const.SQL_PARA, searchUtil.para);
 		return sqlMap;
 	}
 

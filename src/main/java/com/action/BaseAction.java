@@ -114,6 +114,24 @@ public class BaseAction<T extends BaseService,M extends BaseModel> {
 	}
 	
 	/**
+	 * 获取list页面的查询参数map
+	 * 1.将request参数设置到mv中，用map形式保存
+	 * 2017年9月11日
+	 * @param model
+	 * @return
+	 * author:wangzhen
+	 */
+	public ModelAndView getModelAndView(String para){
+		ModelAndView mv = new ModelAndView();
+		String queryString = StringUtil.convertNull(request.getQueryString());
+		mv.addObject("servletURI", StringUtil.convertUrl(request.getRequestURI(), queryString));
+		//将request中的参数设置到ModelAndView中
+		mv.addObject(para,getRequestParamsMap());
+		this.init(mv);
+		return mv;
+	}
+	
+	/**
 	 * 获取ModelAndView对象
 	 * 1.并将request参数设置到mv中
 	 * 2.将model设置到mv中
