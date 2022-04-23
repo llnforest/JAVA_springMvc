@@ -7,7 +7,7 @@
   <name>springMvc</name>
   <description/>
   <properties>
-    <spring.version>4.2.5.RELEASE</spring.version>
+    <spring.version>5.3.19</spring.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hibernate.version>4.3.11.Final</hibernate.version>
     <aspectj.version>1.8.6</aspectj.version>
